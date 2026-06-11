@@ -3,7 +3,7 @@ using Autodesk.Revit.UI;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace Revit.Events.Services;
+namespace Revit.Events.Infrastructure;
 
 internal sealed class RevitContextManager 
 {
