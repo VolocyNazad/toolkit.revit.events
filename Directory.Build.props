@@ -1,0 +1,11 @@
+<Project>
+
+    <PropertyGroup>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>true</ImplicitUsings>
+		<LangVersion>latest</LangVersion>
+		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<Platforms>x64</Platforms>
+    </PropertyGroup>
+</Project>

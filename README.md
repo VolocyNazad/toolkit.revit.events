@@ -1,2 +1,2 @@
 # toolkit.revit.events
-Реализации сервисов внешних событий (IExternalEvent) для Revit
+Реализации сервисов внешних событий для Revit
