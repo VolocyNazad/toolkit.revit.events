@@ -6,11 +6,21 @@ using Xunit;
 namespace Revit.Events.Tests;
 
 /// <summary>
-///     Проверяет регистрацию сервисов пакета в DI-контейнере.
+///     Проверяет регистрацию сервисов пакета в DI-контейнере. Все тесты пропущены: <c>AddEvents()</c>
+///     регистрирует <see cref="Revit.Events.Services.ExternalEvent"/> и
+///     <see cref="Revit.Events.Services.AsyncExternalEvent"/> по их реализациям, а построение таблицы
+///     виртуальных методов для этих типов (реализующих методы с параметром <c>Autodesk.Revit.UI.UIApplication</c>)
+///     заставляет CLR грузить RevitAPIUI.dll и её нативные зависимости уже на этапе регистрации —
+///     ещё до любого <c>GetRequiredService</c>. Вне установленного Revit это невозможно.
 /// </summary>
 public sealed class RegistratorTests
 {
-    [Fact]
+    private const string RevitRequiredSkipReason =
+        "Требует установленного Revit: AddEvents() регистрирует ExternalEvent/AsyncExternalEvent, чьи методы " +
+        "используют Autodesk.Revit.UI.UIApplication, поэтому уже загрузка этих типов для регистрации в DI " +
+        "заставляет CLR резолвить RevitAPIUI.dll и её нативные зависимости, которых нет вне процесса/установки Revit.";
+
+    [Fact(Skip = RevitRequiredSkipReason)]
     public void AddEvents_RegistersExternalEventAsSingleton()
     {
         ServiceCollection services = new();
@@ -25,7 +35,7 @@ public sealed class RegistratorTests
         Assert.Same(first, second);
     }
 
-    [Fact]
+    [Fact(Skip = RevitRequiredSkipReason)]
     public void AddEvents_RegistersAsyncExternalEventAsSingleton()
     {
         ServiceCollection services = new();
@@ -40,7 +50,7 @@ public sealed class RegistratorTests
         Assert.Same(first, second);
     }
 
-    [Fact]
+    [Fact(Skip = RevitRequiredSkipReason)]
     public void AddEvents_ReturnsSameServiceCollection_ForChaining()
     {
         ServiceCollection services = new();

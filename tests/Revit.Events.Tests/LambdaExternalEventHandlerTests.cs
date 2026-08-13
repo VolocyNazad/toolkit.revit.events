@@ -5,12 +5,18 @@ using Xunit;
 namespace Revit.Events.Tests;
 
 /// <summary>
-///     Проверяет <see cref="LambdaExternalEventHandler"/>. Часть тестов пропущена: конструирование
-///     реального объекта <see cref="UIApplication"/> вне процесса Revit невозможно.
+///     Проверяет <see cref="LambdaExternalEventHandler"/>. Все тесты пропущены: конструктор принимает
+///     <see cref="Action{UIApplication}"/>, и уже само обращение к сигнатуре типа (без вызова его членов)
+///     заставляет CLR грузить RevitAPIUI.dll и её нативные зависимости, недоступные вне установленного Revit.
 /// </summary>
 public sealed class LambdaExternalEventHandlerTests
 {
-    [Fact]
+    private const string RevitRequiredSkipReason =
+        "Требует установленного Revit: конструктор LambdaExternalEventHandler принимает Action<UIApplication>, " +
+        "поэтому даже его вызов заставляет CLR резолвить RevitAPIUI.dll и её нативные зависимости, " +
+        "которых нет вне процесса/установки Revit.";
+
+    [Fact(Skip = RevitRequiredSkipReason)]
     public void GetName_ReturnsNonEmptyValue()
     {
         LambdaExternalEventHandler handler = new(_ => { });
@@ -20,7 +26,7 @@ public sealed class LambdaExternalEventHandlerTests
         Assert.False(string.IsNullOrWhiteSpace(name));
     }
 
-    [Fact]
+    [Fact(Skip = RevitRequiredSkipReason)]
     public void GetName_IsStableAcrossMultipleCalls()
     {
         LambdaExternalEventHandler handler = new(_ => { });
@@ -31,8 +37,7 @@ public sealed class LambdaExternalEventHandlerTests
         Assert.Equal(first, second);
     }
 
-    [Fact(Skip = "Требует установленного Revit: создание/использование реального UIApplication заставляет CLR " +
-                 "грузить RevitAPI/RevitAPIUI, а они не запускаются вне процесса/установки Revit.")]
+    [Fact(Skip = RevitRequiredSkipReason)]
     public void Execute_InvokesUnderlyingAction()
     {
         // Тест не может быть выполнен без запущенного Revit — см. описание Skip выше.
