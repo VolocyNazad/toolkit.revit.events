@@ -4,8 +4,13 @@ using Revit.Events.Infrastructure;
 
 namespace Revit.Events.Services;
 
+/// <summary>
+///     Реализация <see cref="IExternalEvent"/> поверх штатного механизма
+///     <see cref="Autodesk.Revit.UI.ExternalEvent"/> Revit API.
+/// </summary>
 internal sealed class ExternalEvent : IExternalEvent
 {
+    /// <inheritdoc />
     public ExternalEventRequest Raise(Action<UIApplication> action, ExternalEventOptions options = ExternalEventOptions.None)
     {
         if ((options & ExternalEventOptions.AllowDirectInvocation) != 0 && RevitContextManager.IsRevitInApiMode)

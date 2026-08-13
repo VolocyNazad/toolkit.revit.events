@@ -1,9 +1,7 @@
 <Project>
 
     <PropertyGroup>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>true</ImplicitUsings>
-		<LangVersion>latest</LangVersion>
+		<!-- Nullable/ImplicitUsings/LangVersion задаёт VolocyNazad.Revit.Sdk -->
 		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<Platforms>x64</Platforms>

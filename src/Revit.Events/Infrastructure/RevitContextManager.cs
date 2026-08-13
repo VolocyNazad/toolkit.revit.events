@@ -5,12 +5,23 @@ using System.Runtime.InteropServices;
 
 namespace Revit.Events.Infrastructure;
 
-internal sealed class RevitContextManager 
+/// <summary>
+///     Через рефлексию и низкоуровневый вызов внутренних методов Revit API получает доступ к текущему
+///     <see cref="Application"/>/<see cref="UIApplication"/> и умеет определять/имитировать выполнение
+///     кода внутри контекста Revit API (API-режим). Используется, чтобы вызывать действия напрямую,
+///     минуя очередь внешних событий, когда это безопасно.
+/// </summary>
+internal sealed class RevitContextManager
 {
     private static readonly Func<bool> GetIsRevitInApiMode;
     private static readonly IntPtr IncrementConstructorPointer;
     private static readonly IntPtr IncrementDestructorPointer;
 
+    /// <summary>
+    ///     Через рефлексию находит внутренние типы и методы сборок Revit API и подготавливает
+    ///     делегаты/указатели, необходимые для работы <see cref="IsRevitInApiMode"/>
+    ///     и <see cref="BeginApiContextScope"/>.
+    /// </summary>
     static RevitContextManager()
     {
         var assemblies = FindAssemblies("RevitDBAPI", "APIUIAPI", "RevitAPIUI");
@@ -58,14 +69,33 @@ internal sealed class RevitContextManager
         UiApplication = new UIApplication(Application);
     }
 
+    /// <summary>
+    ///     Текущий экземпляр Revit <see cref="Application"/>, полученный через внутренний API Revit.
+    /// </summary>
     public static Application Application { get; }
+
+    /// <summary>
+    ///     Обёртка <see cref="UIApplication"/> над <see cref="Application"/>.
+    /// </summary>
     public static UIApplication UiApplication { get; }
 
+    /// <summary>
+    ///     Определяет, выполняется ли текущий вызов внутри контекста Revit API
+    ///     (т. е. безопасно ли обращаться к объектам Revit API напрямую).
+    /// </summary>
     public static bool IsRevitInApiMode => GetIsRevitInApiMode();
 
-    public static IDisposable BeginApiContextScope() 
+    /// <summary>
+    ///     Открывает область, в которой Revit считает, что выполнение происходит внутри контекста API
+    ///     (эмулирует вход в API-режим на время действия <see cref="IDisposable"/>).
+    /// </summary>
+    public static IDisposable BeginApiContextScope()
         => new RevitContextScope(IncrementConstructorPointer, IncrementDestructorPointer);
 
+    /// <summary>
+    ///     Область эмуляции API-режима Revit: увеличивает счётчик глубины API-вызова при создании
+    ///     и уменьшает при <see cref="Dispose"/>.
+    /// </summary>
     private sealed class RevitContextScope : IDisposable
     {
         private readonly IntPtr _memory;
@@ -82,6 +112,9 @@ internal sealed class RevitContextManager
             constructorDelegate(_memory);
         }
 
+        /// <summary>
+        ///     Закрывает область: уменьшает счётчик глубины API-вызова и освобождает неуправляемую память.
+        /// </summary>
         public void Dispose()
         {
             if (Interlocked.Exchange(ref _disposed, 1) != 0) return;
@@ -93,6 +126,11 @@ internal sealed class RevitContextManager
         }
     }
 
+    /// <summary>
+    ///     Находит среди загруженных в текущий домен сборок те, чьё простое имя входит в <paramref name="names"/>.
+    /// </summary>
+    /// <param name="names">Искомые простые имена сборок.</param>
+    /// <returns>Найденные сборки в том же порядке, что и <paramref name="names"/>.</returns>
     private static Assembly[] FindAssemblies(params string[] names)
     {
         HashSet<string> remaining = new(names);

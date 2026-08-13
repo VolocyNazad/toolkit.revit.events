@@ -1,0 +1,59 @@
+<Project Sdk="VolocyNazad.Revit.Sdk/1.0.43">
+
+    <PropertyGroup>
+        <Platform>x64</Platform>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <NoWarn>CS1591</NoWarn>
+    </PropertyGroup>
+
+    <!-- Список Configurations 1-в-1 совпадает с основным проектом, чтобы ProjectReference резолвился без SetConfiguration -->
+    <PropertyGroup>
+        <Configurations>
+            Debug_2021.1.4;Debug_2021.1.9;Debug_2023.0.0;Debug_2025.0.0;
+            Release_2011.0.0;Release_2011.0.1;Release_2012.0.0;Release_2012.0.1;
+            Release_2013.0.0;Release_2013.0.1;Release_2014.0.0;Release_2014.0.1;
+            Release_2015.0.0;Release_2015.0.1;Release_2016.0.0;Release_2016.0.1;
+            Release_2016.0.2;Release_2017.0.0;Release_2017.0.1;Release_2017.0.2;
+            Release_2018.0.0;Release_2018.0.1;Release_2018.0.2;Release_2019.0.0;
+            Release_2019.0.1;Release_2020.0.0;Release_2020.0.1;Release_2021.0.0;
+            Release_2021.1.4;Release_2021.1.9;Release_2022.0.0;Release_2022.1.0;
+            Release_2023.0.0;Release_2024.0.0;Release_2024.2.0;Release_2025.0.0;
+            Release_2026.0.0;Release_2027.0.0;Release_2027.0.2
+        </Configurations>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+        <PackageReference Include="xunit" Version="2.9.2" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="coverlet.collector" Version="6.0.2">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <!-- Тесты вызывают new ServiceCollection()/.BuildServiceProvider() — нужен полный пакет,
+             а не только *.DependencyInjection.Abstractions (его и так тянет основной проект) -->
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.9" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Revit.Events\Revit.Events.csproj" />
+    </ItemGroup>
+
+    <!--
+        SDK по умолчанию вырезает RevitAPI/RevitAPIUI из выходной папки (расчёт на то, что хост — сам Revit).
+        Тестовый процесс Revit не запускает, поэтому копирование нужно вернуть — НЕ переопределением
+        чужого таргета по имени (порядок импортов легко перепутать и словить труднообъяснимые баги),
+        а отдельным таргетом, довешенным через AfterTargets.
+    -->
+    <Target Name="RestoreRevitApiCopyLocalForTests" AfterTargets="RemoveRevitAPICopyLocal">
+        <ItemGroup>
+            <ReferenceCopyLocalPaths Include="@(ReferencePath)" Condition="'%(Filename)' == 'RevitAPI' or '%(Filename)' == 'RevitAPIUI'" />
+        </ItemGroup>
+    </Target>
+
+</Project>

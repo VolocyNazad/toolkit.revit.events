@@ -4,8 +4,13 @@ using Revit.Events.Infrastructure;
 
 namespace Revit.Events.Services;
 
+/// <summary>
+///     Реализация <see cref="IAsyncExternalEvent"/>: оборачивает штатный механизм
+///     <see cref="Autodesk.Revit.UI.ExternalEvent"/> Revit API в <see cref="Task"/>-совместимый API.
+/// </summary>
 internal sealed class AsyncExternalEvent : IAsyncExternalEvent
 {
+    /// <inheritdoc />
     public Task Raise(Action<UIApplication> action, ExternalEventOptions options = ExternalEventOptions.None)
     {
         if ((options & ExternalEventOptions.AllowDirectInvocation) != 0 && RevitContextManager.IsRevitInApiMode)
