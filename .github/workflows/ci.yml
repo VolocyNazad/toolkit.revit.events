@@ -19,6 +19,13 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
+    - name: Check for version tag
+      id: tag_check
+      run: |
+        $tag = git tag --points-at HEAD
+        $isTagged = [bool]$tag
+        Write-Host "Tag(s) at HEAD: $tag"
+        echo "is_tagged=$($isTagged.ToString().ToLower())" >> $env:GITHUB_OUTPUT
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v4
     - name: Execute build and run tests
@@ -31,7 +38,7 @@ jobs:
         name: VolocyNazad.Revit.Events
         path: artifacts/*
     - name: Publish NuGet package
-      if: github.event_name == 'push'
+      if: github.event_name == 'push' && steps.tag_check.outputs.is_tagged == 'true'
       run: |
         foreach($file in (Get-ChildItem "artifacts/" -Recurse -Include *.nupkg)) {
             dotnet nuget push $file --api-key "${{ secrets.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
