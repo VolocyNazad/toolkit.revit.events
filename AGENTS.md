@@ -15,6 +15,8 @@ Commit messages follow Conventional Commits (`<type>(<scope>): <description>`, e
 
 Don't `git push` - commit locally and leave pushing to the user, unless they explicitly ask for a push.
 
+Tests that touch live Revit API objects must use `Nice3point.TUnit.Revit` (see this repo's Tech stack/testing notes for when that's needed vs plain xunit) - it runs inside a real Revit process, so it can't be used for tests that exercise `RevitAPIUI`.
+
 ## About
 
 Source for `VolocyNazad.Revit.Events`: wraps Revit API events (document
