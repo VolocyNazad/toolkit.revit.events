@@ -34,20 +34,12 @@
 		<UseWPF>true</UseWPF>
 		<Platform>x64</Platform>
 		<Configurations>
-			Debug_2021.1.4;Debug_2021.1.9;Debug_2023.0.0;Debug_2025.0.0;
-			Release_2011.0.0;Release_2011.0.1;Release_2012.0.0;Release_2012.0.1;
-			Release_2013.0.0;Release_2013.0.1;Release_2014.0.0;Release_2014.0.1;
-			Release_2015.0.0;Release_2015.0.1;Release_2016.0.0;Release_2016.0.1;
-			Release_2016.0.2;Release_2017.0.0;Release_2017.0.1;Release_2017.0.2;
-			Release_2018.0.0;Release_2018.0.1;Release_2018.0.2;Release_2019.0.0;
-			Release_2019.0.1;Release_2020.0.0;Release_2020.0.1;Release_2021.0.0;
-			Release_2021.1.4;Release_2021.1.9;Release_2022.0.0;Release_2022.1.0;
-			Release_2023.0.0;Release_2024.0.0;Release_2024.2.0;Release_2025.0.0;
-			Release_2026.0.0;Release_2027.0.0;Release_2027.0.2
+		  Debug_2021.1.9;Debug_2023.0.0;Debug_2025.0.0;
+		  Release_2021.1.9;Release_2023.0.0;Release_2025.0.0
 		</Configurations>
 	</PropertyGroup>
 
-	<!-- MinVer: patch-часть версии берётся из git-тегов/истории коммитов, major остаётся привязан к версии Revit -->
+	<!-- MinVer: the patch portion of the version is taken from git tags/commit history, major stays tied to the Revit version -->
 	<PropertyGroup>
 		<MinVerTagPrefix></MinVerTagPrefix>
 		<MinVerMinimumMajorMinor>0.0</MinVerMinimumMajorMinor>
@@ -56,11 +48,11 @@
 
 	<Target Name="ApplyRevitVersion" AfterTargets="MinVer" BeforeTargets="GetAssemblyVersion;GenerateNuspec;CoreCompile">
 		<PropertyGroup>
-			<!-- AssemblyVersion/FileVersion — только числа, System.Version суффиксы не поддерживает -->
+			<!-- AssemblyVersion/FileVersion — numbers only, System.Version does not support suffixes -->
 			<AssemblyVersion>$(MajorRevitVersion).0.$(MinVerPatch)</AssemblyVersion>
 			<FileVersion>$(MajorRevitVersion).0.$(MinVerPatch)</FileVersion>
 
-			<!-- Version/PackageVersion — с суффиксом "-dev.N", если сборка не из коммита с тегом -->
+			<!-- Version/PackageVersion — with a "-dev.N" suffix if the build is not from a tagged commit -->
 			<Version Condition="'$(MinVerPreRelease)' == ''">$(MajorRevitVersion).0.$(MinVerPatch)</Version>
 			<Version Condition="'$(MinVerPreRelease)' != ''">$(MajorRevitVersion).0.$(MinVerPatch)-$(MinVerPreRelease)</Version>
 			<PackageVersion>$(Version)</PackageVersion>
@@ -68,14 +60,14 @@
 	</Target>
 
 	<ItemGroup>
-		<PackageReference Include="MinVer" Version="6.*">
+		<PackageReference Include="MinVer" Version="8.0.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.9" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.11" />
 		<PackageReference Include="PolySharp" Version="1.16.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
