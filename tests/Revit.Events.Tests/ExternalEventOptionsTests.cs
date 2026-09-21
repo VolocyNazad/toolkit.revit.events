@@ -1,11 +1,12 @@
-﻿using Revit.Events.Services;
+using Revit.Events.Services;
 using Xunit;
 
 namespace Revit.Events.Tests;
 
 /// <summary>
-///     Проверяет поведение флагов <see cref="ExternalEventOptions"/> — чистая логика без обращения к Revit API.
+///     Verifies the behavior of the <see cref="ExternalEventOptions"/> flags — pure logic with no Revit API access.
 /// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "Test names use underscores to separate scenario and expected result.")]
 public sealed class ExternalEventOptionsTests
 {
     [Fact]

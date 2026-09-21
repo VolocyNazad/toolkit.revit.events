@@ -1,44 +1,11 @@
 <Solution>
   <Configurations>
-    <BuildType Name="Debug_2021.1.4" />
     <BuildType Name="Debug_2021.1.9" />
     <BuildType Name="Debug_2023.0.0" />
     <BuildType Name="Debug_2025.0.0" />
-    <BuildType Name="Release_2011.0.0" />
-    <BuildType Name="Release_2011.0.1" />
-    <BuildType Name="Release_2012.0.0" />
-    <BuildType Name="Release_2012.0.1" />
-    <BuildType Name="Release_2013.0.0" />
-    <BuildType Name="Release_2013.0.1" />
-    <BuildType Name="Release_2014.0.0" />
-    <BuildType Name="Release_2014.0.1" />
-    <BuildType Name="Release_2015.0.0" />
-    <BuildType Name="Release_2015.0.1" />
-    <BuildType Name="Release_2016.0.0" />
-    <BuildType Name="Release_2016.0.1" />
-    <BuildType Name="Release_2016.0.2" />
-    <BuildType Name="Release_2017.0.0" />
-    <BuildType Name="Release_2017.0.1" />
-    <BuildType Name="Release_2017.0.2" />
-    <BuildType Name="Release_2018.0.0" />
-    <BuildType Name="Release_2018.0.1" />
-    <BuildType Name="Release_2018.0.2" />
-    <BuildType Name="Release_2019.0.0" />
-    <BuildType Name="Release_2019.0.1" />
-    <BuildType Name="Release_2020.0.0" />
-    <BuildType Name="Release_2020.0.1" />
-    <BuildType Name="Release_2021.0.0" />
-    <BuildType Name="Release_2021.1.4" />
     <BuildType Name="Release_2021.1.9" />
-    <BuildType Name="Release_2022.0.0" />
-    <BuildType Name="Release_2022.1.0" />
     <BuildType Name="Release_2023.0.0" />
-    <BuildType Name="Release_2024.0.0" />
-    <BuildType Name="Release_2024.2.0" />
     <BuildType Name="Release_2025.0.0" />
-    <BuildType Name="Release_2026.0.0" />
-    <BuildType Name="Release_2027.0.0" />
-    <BuildType Name="Release_2027.0.2" />
     <Platform Name="x64" />
   </Configurations>
   <Folder Name="/solutionItems/">
@@ -51,6 +18,8 @@
     <File Path="global.json" />
     <File Path="LICENSE.md" />
     <File Path="README.md" />
+    <File Path="NuGet.config" />
+    <File Path=".editorconfig" />
   </Folder>
   <Project Path="src/Revit.Events/Revit.Events.csproj">
     <Platform Project="x64" />
@@ -58,4 +27,18 @@
   <Project Path="tests/Revit.Events.Tests/Revit.Events.Tests.csproj">
     <Platform Project="x64" />
   </Project>
+  <Folder Name="/docs/">
+    <File Path="docs/repository.md" />
+  </Folder>
+  <Folder Name="/docs/policies/">
+    <File Path="docs/policies/development.md" />
+  </Folder>
+  <Folder Name="/solutionItems/.github/workflows/">
+    <File Path=".github/workflows/build-and-test.yml" />
+    <File Path=".github/workflows/publish-nuget.yml" />
+    <File Path=".github/workflows/repository-policy.yml" />
+  </Folder>
+  <Folder Name="/solutionItems/scripts/">
+    <File Path="scripts/Validate-Repository.ps1" />
+  </Folder>
 </Solution>

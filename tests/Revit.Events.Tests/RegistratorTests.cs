@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Revit.Events.Abstractions.Services;
 using Revit.Events.DI;
 using Xunit;
@@ -6,19 +6,20 @@ using Xunit;
 namespace Revit.Events.Tests;
 
 /// <summary>
-///     Проверяет регистрацию сервисов пакета в DI-контейнере. Все тесты пропущены: <c>AddEvents()</c>
-///     регистрирует <see cref="Revit.Events.Services.ExternalEvent"/> и
-///     <see cref="Revit.Events.Services.AsyncExternalEvent"/> по их реализациям, а построение таблицы
-///     виртуальных методов для этих типов (реализующих методы с параметром <c>Autodesk.Revit.UI.UIApplication</c>)
-///     заставляет CLR грузить RevitAPIUI.dll и её нативные зависимости уже на этапе регистрации —
-///     ещё до любого <c>GetRequiredService</c>. Вне установленного Revit это невозможно.
+///     Verifies registration of the package's services in the DI container. All tests are skipped: <c>AddEvents()</c>
+///     registers <see cref="Revit.Events.Services.ExternalEvent"/> and
+///     <see cref="Revit.Events.Services.AsyncExternalEvent"/> by their implementations, and building the
+///     virtual method table for these types (implementing methods that take an <c>Autodesk.Revit.UI.UIApplication</c> parameter)
+///     forces the CLR to load RevitAPIUI.dll and its native dependencies already at registration time —
+///     before any <c>GetRequiredService</c> call. This is impossible outside of an installed Revit.
 /// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "Test names use underscores to separate scenario and expected result.")]
 public sealed class RegistratorTests
 {
     private const string RevitRequiredSkipReason =
-        "Требует установленного Revit: AddEvents() регистрирует ExternalEvent/AsyncExternalEvent, чьи методы " +
-        "используют Autodesk.Revit.UI.UIApplication, поэтому уже загрузка этих типов для регистрации в DI " +
-        "заставляет CLR резолвить RevitAPIUI.dll и её нативные зависимости, которых нет вне процесса/установки Revit.";
+        "Requires Revit to be installed: AddEvents() registers ExternalEvent/AsyncExternalEvent, whose methods " +
+        "use Autodesk.Revit.UI.UIApplication, so merely loading these types for DI registration " +
+        "forces the CLR to resolve RevitAPIUI.dll and its native dependencies, which are unavailable outside of a Revit process/installation.";
 
     [Fact(Skip = RevitRequiredSkipReason)]
     public void AddEvents_RegistersExternalEventAsSingleton()

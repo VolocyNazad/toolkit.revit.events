@@ -1,20 +1,21 @@
-﻿using Autodesk.Revit.UI;
+using Autodesk.Revit.UI;
 using Revit.Events.Services;
 using Xunit;
 
 namespace Revit.Events.Tests;
 
 /// <summary>
-///     Проверяет <see cref="LambdaExternalEventHandler"/>. Все тесты пропущены: конструктор принимает
-///     <see cref="Action{UIApplication}"/>, и уже само обращение к сигнатуре типа (без вызова его членов)
-///     заставляет CLR грузить RevitAPIUI.dll и её нативные зависимости, недоступные вне установленного Revit.
+///     Verifies <see cref="LambdaExternalEventHandler"/>. All tests are skipped: the constructor takes an
+///     <see cref="Action{UIApplication}"/>, and merely referencing the type's signature (without calling its members)
+///     forces the CLR to load RevitAPIUI.dll and its native dependencies, which are unavailable outside of an installed Revit.
 /// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "Test names use underscores to separate scenario and expected result.")]
 public sealed class LambdaExternalEventHandlerTests
 {
     private const string RevitRequiredSkipReason =
-        "Требует установленного Revit: конструктор LambdaExternalEventHandler принимает Action<UIApplication>, " +
-        "поэтому даже его вызов заставляет CLR резолвить RevitAPIUI.dll и её нативные зависимости, " +
-        "которых нет вне процесса/установки Revit.";
+        "Requires Revit to be installed: LambdaExternalEventHandler's constructor takes Action<UIApplication>, " +
+        "so even calling it forces the CLR to resolve RevitAPIUI.dll and its native dependencies, " +
+        "which are unavailable outside of a Revit process/installation.";
 
     [Fact(Skip = RevitRequiredSkipReason)]
     public void GetName_ReturnsNonEmptyValue()
@@ -40,6 +41,6 @@ public sealed class LambdaExternalEventHandlerTests
     [Fact(Skip = RevitRequiredSkipReason)]
     public void Execute_InvokesUnderlyingAction()
     {
-        // Тест не может быть выполнен без запущенного Revit — см. описание Skip выше.
+        // This test cannot run without Revit running — see the Skip description above.
     }
 }
