@@ -1,20 +1,20 @@
 ﻿namespace Revit.Events.Services;
 
 /// <summary>
-///     Флаги, управляющие поведением <see cref="Abstractions.Services.IExternalEvent"/>
-///     и <see cref="Abstractions.Services.IAsyncExternalEvent"/> при постановке события Revit в очередь.
+///     Flags controlling the behavior of <see cref="Abstractions.Services.IExternalEvent"/>
+///     and <see cref="Abstractions.Services.IAsyncExternalEvent"/> when queuing a Revit event.
 /// </summary>
 [Flags]
 public enum ExternalEventOptions
 {
     /// <summary>
-    ///     Поведение по умолчанию: действие всегда выполняется через штатный механизм внешних событий Revit.
+    ///     Default behavior: the action always runs through Revit's standard external event mechanism.
     /// </summary>
     None = 0,
 
     /// <summary>
-    ///     Если вызов уже выполняется внутри контекста Revit API, действие выполняется немедленно,
-    ///     минуя постановку в очередь внешних событий.
+    ///     If the call is already running inside the Revit API context, the action executes immediately,
+    ///     bypassing the external event queue.
     /// </summary>
     AllowDirectInvocation = 1 << 0
 }

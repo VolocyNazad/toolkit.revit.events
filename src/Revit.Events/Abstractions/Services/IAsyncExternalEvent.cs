@@ -4,19 +4,19 @@ using Revit.Events.Services;
 namespace Revit.Events.Abstractions.Services;
 
 /// <summary>
-///     Асинхронный запуск внешнего события Revit: планирует выполнение <paramref name="action"/> внутри
-///     контекста Revit API и возвращает <see cref="Task"/>, завершающийся после отработки действия.
+///     Asynchronous invocation of a Revit external event: schedules an action to run inside
+///     the Revit API context and returns a <see cref="Task"/> that completes once the action has finished.
 /// </summary>
 public interface IAsyncExternalEvent
 {
     /// <summary>
-    ///     Запрашивает выполнение <paramref name="action"/> в контексте Revit API и дожидается его завершения.
+    ///     Requests execution of <paramref name="action"/> in the Revit API context and awaits its completion.
     /// </summary>
-    /// <param name="action">Делегат, выполняемый с активным <see cref="UIApplication"/>.</param>
-    /// <param name="options">Дополнительные параметры запуска, см. <see cref="ExternalEventOptions"/>.</param>
+    /// <param name="action">The delegate executed with the active <see cref="UIApplication"/>.</param>
+    /// <param name="options">Additional invocation options, see <see cref="ExternalEventOptions"/>.</param>
     /// <returns>
-    ///     Задача, завершающаяся после выполнения <paramref name="action"/>;
-    ///     переходит в состояние ошибки, если делегат выбросил исключение.
+    ///     A task that completes after <paramref name="action"/> has run;
+    ///     transitions to a faulted state if the delegate threw an exception.
     /// </returns>
     Task Raise(Action<UIApplication> action, ExternalEventOptions options = ExternalEventOptions.None);
 }

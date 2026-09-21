@@ -5,8 +5,8 @@ using Revit.Events.Infrastructure;
 namespace Revit.Events.Services;
 
 /// <summary>
-///     Реализация <see cref="IExternalEvent"/> поверх штатного механизма
-///     <see cref="Autodesk.Revit.UI.ExternalEvent"/> Revit API.
+///     Implementation of <see cref="IExternalEvent"/> on top of Revit API's standard
+///     <see cref="Autodesk.Revit.UI.ExternalEvent"/> mechanism.
 /// </summary>
 internal sealed class ExternalEvent : IExternalEvent
 {

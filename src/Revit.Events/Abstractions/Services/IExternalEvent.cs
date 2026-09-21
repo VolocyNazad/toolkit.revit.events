@@ -4,16 +4,16 @@ using Revit.Events.Services;
 namespace Revit.Events.Abstractions.Services;
 
 /// <summary>
-///     Синхронный запуск внешнего события Revit: планирует выполнение <paramref name="action"/> внутри
-///     контекста Revit API и сразу возвращает результат постановки в очередь.
+///     Synchronous invocation of a Revit external event: schedules an action to run inside
+///     the Revit API context and immediately returns the result of queuing it.
 /// </summary>
 public interface IExternalEvent
 {
     /// <summary>
-    ///     Запрашивает выполнение <paramref name="action"/> в контексте Revit API.
+    ///     Requests execution of <paramref name="action"/> in the Revit API context.
     /// </summary>
-    /// <param name="action">Делегат, выполняемый с активным <see cref="UIApplication"/>.</param>
-    /// <param name="options">Дополнительные параметры запуска, см. <see cref="ExternalEventOptions"/>.</param>
-    /// <returns>Результат постановки события Revit в очередь на выполнение.</returns>
+    /// <param name="action">The delegate executed with the active <see cref="UIApplication"/>.</param>
+    /// <param name="options">Additional invocation options, see <see cref="ExternalEventOptions"/>.</param>
+    /// <returns>The result of queuing the Revit event for execution.</returns>
     ExternalEventRequest Raise(Action<UIApplication> action, ExternalEventOptions options = ExternalEventOptions.None);
 }

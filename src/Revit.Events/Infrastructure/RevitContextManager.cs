@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 namespace Revit.Events.Infrastructure;
 
 /// <summary>
-///     Через рефлексию и низкоуровневый вызов внутренних методов Revit API получает доступ к текущему
-///     <see cref="Application"/>/<see cref="UIApplication"/> и умеет определять/имитировать выполнение
-///     кода внутри контекста Revit API (API-режим). Используется, чтобы вызывать действия напрямую,
-///     минуя очередь внешних событий, когда это безопасно.
+///     Uses reflection and low-level calls into internal Revit API methods to obtain access to the current
+///     <see cref="Application"/>/<see cref="UIApplication"/> and to detect/emulate execution of
+///     code inside the Revit API context (API mode). Used to invoke actions directly,
+///     bypassing the external event queue, when it is safe to do so.
 /// </summary>
 internal sealed class RevitContextManager
 {
@@ -18,21 +18,24 @@ internal sealed class RevitContextManager
     private static readonly IntPtr IncrementDestructorPointer;
 
     /// <summary>
-    ///     Через рефлексию находит внутренние типы и методы сборок Revit API и подготавливает
-    ///     делегаты/указатели, необходимые для работы <see cref="IsRevitInApiMode"/>
-    ///     и <see cref="BeginApiContextScope"/>.
+    ///     Uses reflection to locate the internal types and methods in the Revit API assemblies and prepares
+    ///     the delegates/pointers required for <see cref="IsRevitInApiMode"/>
+    ///     and <see cref="BeginApiContextScope"/> to work.
     /// </summary>
     static RevitContextManager()
     {
         var assemblies = FindAssemblies("RevitDBAPI", "APIUIAPI", "RevitAPIUI");
 
         var dbAssemblyMethods = assemblies[0].ManifestModule.GetMethods(BindingFlags.NonPublic | BindingFlags.Static);
-        var getApplicationMethod = dbAssemblyMethods.FirstOrDefault(info => info.Name == "RevitApplication.getApplication_");
+        var getApplicationMethod = dbAssemblyMethods.FirstOrDefault(info => info.Name == "RevitApplication.getApplication_")
+            ?? throw new MissingMethodException("RevitDBAPI", "RevitApplication.getApplication_");
 
-        var proxyType = assemblies[0].DefinedTypes.FirstOrDefault(info => info.FullName == "Autodesk.Revit.Proxy.ApplicationServices.ApplicationProxy");
+        var proxyType = assemblies[0].DefinedTypes.FirstOrDefault(info => info.FullName == "Autodesk.Revit.Proxy.ApplicationServices.ApplicationProxy")
+            ?? throw new TypeLoadException("Autodesk.Revit.Proxy.ApplicationServices.ApplicationProxy was not found.");
 
         const BindingFlags internalFlags = BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance;
-        var proxyConstructor = proxyType.GetConstructor(internalFlags, null, [getApplicationMethod.ReturnType], null);
+        var proxyConstructor = proxyType.GetConstructor(internalFlags, null, [getApplicationMethod.ReturnType], null)
+            ?? throw new MissingMethodException(proxyType.FullName, ".ctor");
 
         var proxy = proxyConstructor.Invoke([getApplicationMethod.Invoke(null, null)]);
 
@@ -48,14 +51,18 @@ internal sealed class RevitContextManager
 #endif
 
         var apiAssemblyMethods = assemblies[1].ManifestModule.GetMethods(BindingFlags.NonPublic | BindingFlags.Static);
-        var apiCallDepthManagerMethod = apiAssemblyMethods.FirstOrDefault(method => method.Name == "APICallDepthManager.singletonfactory");
+        var apiCallDepthManagerMethod = apiAssemblyMethods.FirstOrDefault(method => method.Name == "APICallDepthManager.singletonfactory")
+            ?? throw new MissingMethodException("APIUIAPI", "APICallDepthManager.singletonfactory");
 
-        var isRevitInApiModeMethod = apiAssemblyMethods.FirstOrDefault(method => method.Name == "APICallDepthManager.isRevitInAPIMode");
+        var isRevitInApiModeMethod = apiAssemblyMethods.FirstOrDefault(method => method.Name == "APICallDepthManager.isRevitInAPIMode")
+            ?? throw new MissingMethodException("APIUIAPI", "APICallDepthManager.isRevitInAPIMode");
 
         var uiAssemblyMethods = assemblies[2].ManifestModule.GetMethods(BindingFlags.NonPublic | BindingFlags.Static);
-        var incrementConstructor = uiAssemblyMethods.FirstOrDefault(method => method.Name == "IncrementAPICallDepth.{ctor}");
+        var incrementConstructor = uiAssemblyMethods.FirstOrDefault(method => method.Name == "IncrementAPICallDepth.{ctor}")
+            ?? throw new MissingMethodException("RevitAPIUI", "IncrementAPICallDepth.{ctor}");
 
-        var incrementDestructor = uiAssemblyMethods.FirstOrDefault(method => method.Name == "IncrementAPICallDepth.{dtor}");
+        var incrementDestructor = uiAssemblyMethods.FirstOrDefault(method => method.Name == "IncrementAPICallDepth.{dtor}")
+            ?? throw new MissingMethodException("RevitAPIUI", "IncrementAPICallDepth.{dtor}");
 
         IncrementConstructorPointer = incrementConstructor.MethodHandle.GetFunctionPointer();
         IncrementDestructorPointer = incrementDestructor.MethodHandle.GetFunctionPointer();
@@ -70,31 +77,31 @@ internal sealed class RevitContextManager
     }
 
     /// <summary>
-    ///     Текущий экземпляр Revit <see cref="Application"/>, полученный через внутренний API Revit.
+    ///     The current Revit <see cref="Application"/> instance, obtained via Revit's internal API.
     /// </summary>
     public static Application Application { get; }
 
     /// <summary>
-    ///     Обёртка <see cref="UIApplication"/> над <see cref="Application"/>.
+    ///     A <see cref="UIApplication"/> wrapper over <see cref="Application"/>.
     /// </summary>
     public static UIApplication UiApplication { get; }
 
     /// <summary>
-    ///     Определяет, выполняется ли текущий вызов внутри контекста Revit API
-    ///     (т. е. безопасно ли обращаться к объектам Revit API напрямую).
+    ///     Determines whether the current call is running inside the Revit API context
+    ///     (i.e. whether it is safe to access Revit API objects directly).
     /// </summary>
     public static bool IsRevitInApiMode => GetIsRevitInApiMode();
 
     /// <summary>
-    ///     Открывает область, в которой Revit считает, что выполнение происходит внутри контекста API
-    ///     (эмулирует вход в API-режим на время действия <see cref="IDisposable"/>).
+    ///     Opens a scope in which Revit believes execution is happening inside the API context
+    ///     (emulates entering API mode for the lifetime of the returned <see cref="IDisposable"/>).
     /// </summary>
     public static IDisposable BeginApiContextScope()
         => new RevitContextScope(IncrementConstructorPointer, IncrementDestructorPointer);
 
     /// <summary>
-    ///     Область эмуляции API-режима Revit: увеличивает счётчик глубины API-вызова при создании
-    ///     и уменьшает при <see cref="Dispose"/>.
+    ///     A scope emulating Revit's API mode: increments the API call depth counter on creation
+    ///     and decrements it on <see cref="Dispose"/>.
     /// </summary>
     private sealed class RevitContextScope : IDisposable
     {
@@ -113,7 +120,7 @@ internal sealed class RevitContextManager
         }
 
         /// <summary>
-        ///     Закрывает область: уменьшает счётчик глубины API-вызова и освобождает неуправляемую память.
+        ///     Closes the scope: decrements the API call depth counter and frees unmanaged memory.
         /// </summary>
         public void Dispose()
         {
@@ -127,10 +134,10 @@ internal sealed class RevitContextManager
     }
 
     /// <summary>
-    ///     Находит среди загруженных в текущий домен сборок те, чьё простое имя входит в <paramref name="names"/>.
+    ///     Finds, among the assemblies loaded into the current domain, those whose simple name is in <paramref name="names"/>.
     /// </summary>
-    /// <param name="names">Искомые простые имена сборок.</param>
-    /// <returns>Найденные сборки в том же порядке, что и <paramref name="names"/>.</returns>
+    /// <param name="names">The simple assembly names to look for.</param>
+    /// <returns>The found assemblies, in the same order as <paramref name="names"/>.</returns>
     private static Assembly[] FindAssemblies(params string[] names)
     {
         HashSet<string> remaining = new(names);

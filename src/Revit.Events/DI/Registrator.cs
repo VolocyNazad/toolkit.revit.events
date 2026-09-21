@@ -5,16 +5,16 @@ using Revit.Events.Services;
 namespace Revit.Events.DI;
 
 /// <summary>
-///     Методы расширения для регистрации сервисов Revit.Events в контейнере зависимостей.
+///     Extension methods for registering Revit.Events services in the dependency injection container.
 /// </summary>
 public static class Registrator
 {
 	extension(IServiceCollection services)
 	{
         /// <summary>
-        ///     Регистрирует <see cref="IExternalEvent"/> и <see cref="IAsyncExternalEvent"/> как singleton-сервисы.
+        ///     Registers <see cref="IExternalEvent"/> and <see cref="IAsyncExternalEvent"/> as singleton services.
         /// </summary>
-        /// <returns>Та же коллекция сервисов для дальнейшей цепочки вызовов.</returns>
+        /// <returns>The same service collection, for further chaining.</returns>
         public IServiceCollection AddEvents() => services
             .AddSingleton<IExternalEvent, ExternalEvent>()
             .AddSingleton<IAsyncExternalEvent, AsyncExternalEvent>()

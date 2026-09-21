@@ -5,14 +5,14 @@ using Autodesk.Revit.ApplicationServices;
 namespace Revit.Events.Infrastructure;
 
 /// <summary>
-///     Небезопасные аксессоры к внутренним (недоступным через рефлексию на .NET 8+) членам Revit API.
+///     Unsafe accessors for internal Revit API members (not reachable via reflection on .NET 8+).
 /// </summary>
 internal static class UnsafeAccessors
 {
     /// <summary>
-    ///     Вызывает внутренний конструктор <see cref="Application"/>, минуя ограничения доступа.
+    ///     Invokes the internal <see cref="Application"/> constructor, bypassing access restrictions.
     /// </summary>
-    /// <param name="proxy">Экземпляр внутреннего прокси-объекта Revit API, передаваемый в конструктор.</param>
+    /// <param name="proxy">The internal Revit API proxy object instance passed to the constructor.</param>
     [UnsafeAccessor(UnsafeAccessorKind.Constructor)]
     internal static extern Application CreateApplication(object proxy);
 }

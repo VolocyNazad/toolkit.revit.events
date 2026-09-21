@@ -5,8 +5,8 @@ using Revit.Events.Infrastructure;
 namespace Revit.Events.Services;
 
 /// <summary>
-///     Реализация <see cref="IAsyncExternalEvent"/>: оборачивает штатный механизм
-///     <see cref="Autodesk.Revit.UI.ExternalEvent"/> Revit API в <see cref="Task"/>-совместимый API.
+///     Implementation of <see cref="IAsyncExternalEvent"/>: wraps Revit API's standard
+///     <see cref="Autodesk.Revit.UI.ExternalEvent"/> mechanism in a <see cref="Task"/>-compatible API.
 /// </summary>
 internal sealed class AsyncExternalEvent : IAsyncExternalEvent
 {
@@ -50,7 +50,7 @@ internal sealed class AsyncExternalEvent : IAsyncExternalEvent
             externalEvent.Raise();
         }
         
-        // Добавляем продолжение для отслеживания ошибок
+        // Add continuation for tracking errors
         return taskCompletionSource.Task;
     }
 }
