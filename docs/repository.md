@@ -60,3 +60,5 @@ The root `.editorconfig` defines the portable formatting baseline. Existing repo
 ## Versioning and release tags
 
 The library uses MinVer 8 with stable tags in the `0.0.PATCH` format and no `v` prefix. A tagged commit is built separately for Revit 2021.1.9, 2023.0.0, and 2025.0.0; tag `0.0.8`, for example, produces package versions `2021.0.8`, `2023.0.8`, and `2025.0.8`. Manual publishing accepts exactly one matching tag at HEAD and verifies the package ID and Revit-specific version before pushing to NuGet.
+
+The tagged commit must already contain the release section in `CHANGELOG.md` with an empty `Unreleased` section above it; the publish workflow stops otherwise. See the [release changelog policy](policies/development.md#release-changelog).
