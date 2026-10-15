@@ -1,6 +1,6 @@
 # Revit.Events
 
-[![Revit 2021.1.9, 2023, 2025](https://img.shields.io/badge/Revit-2021.1.9%20%7C%202023%20%7C%202025-green.svg)](https://autodesk.com/revit)
+[![Revit 2021-2027](https://img.shields.io/badge/Revit-2021%20--%202027-green.svg)](https://autodesk.com/revit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![VolocyNazad](https://img.shields.io/badge/VolocyNazad-blue.svg)](https://github.com/VolocyNazad)
 
@@ -87,7 +87,7 @@ If the code is already running inside the Revit API context (for example, called
 
 ## Supported Revit Versions
 
-Revit 2021.1.9 and 2023.0.0 use net48; Revit 2025.0.0 uses net8.0-windows.
+Revit 2021.1.100, 2022.1.80, 2023.1.90 and 2024.3.60 use net48; Revit 2025.4.60 and 2026.4.10 use net8.0-windows; Revit 2027.3.0 uses net10.0-windows.
 
 ## Development
 
@@ -96,8 +96,8 @@ The matrix of Revit versions is defined by the build configurations (`Debug_<yea
 Tests live in `tests/Revit.Events.Tests`. Part of the logic (working with real Revit-typed objects) cannot be tested outside of the Revit process — such tests are marked `[Fact(Skip = "...")]`.
 
 ```
-dotnet build --configuration "Release_2025.0.0"
-dotnet test --configuration "Release_2025.0.0"
+dotnet build --configuration "Release_2026.4.10"
+dotnet test --configuration "Release_2026.4.10"
 ```
 
 ## Changelog

@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Support Revit 2021-2027: 2021.1.100, 2022.1.80, 2023.1.90, 2024.3.60, 2025.4.60, 2026.4.10, 2027.3.0 (SDK 1.1.0; 2021-2024 net48, 2025-2026 net8.0-windows, 2027 net10.0-windows).
+
+### Changed
+
+- Reference the Revit API through `Nice3point.Revit.Api.RevitAPI` / `Nice3point.Revit.Api.RevitAPIUI` (floating `$(MajorRevitVersion).*`) instead of `Revit_All_Main_Versions_API_x64`, so each major resolves to its latest stable API patch.
+
 ## [0.0.9] - 2026-09-21
 
 ### Added
