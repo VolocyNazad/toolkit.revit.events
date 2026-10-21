@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
+    <CentralRevitVersion Condition="$(Configuration.Contains('_'))">$(Configuration.Split('_')[1])</CentralRevitVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <GlobalPackageReference Include="MinVer" Version="8.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="AutoConstructor" Version="5.6.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.12" />
+    <PackageVersion Include="Nice3point.Revit.Api.RevitAPI" Version="$(CentralRevitVersion)" />
+    <PackageVersion Include="Nice3point.Revit.Api.RevitAPIUI" Version="$(CentralRevitVersion)" />
+    <PackageVersion Include="PolySharp" Version="1.16.0" />
+  </ItemGroup>
+</Project>

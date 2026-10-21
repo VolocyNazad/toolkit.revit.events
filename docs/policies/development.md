@@ -45,6 +45,12 @@ Keep the root `.editorconfig` in the solution and apply its repository-wide enco
 
 Projects using xUnit v3 4.0 run through Microsoft.Testing.Platform, selected in global.json. CI invokes each headless test project explicitly and treats a run with no discovered tests as a failure. Tests that require a running Revit process use the .RevitTests suffix and are excluded from hosted headless test runs.
 
+## Package version management
+
+Use central package management: declare runtime and build package versions in the root `Directory.Packages.props`, and test-only packages in `tests/Directory.Packages.props`, which imports the root file. Keep `MinVer` as a `GlobalPackageReference`; source generators remain local `PackageReference` items with their version in the central file. Do not put versions on `PackageReference` items except through an explicit, documented exception.
+
+The Revit API packages are versioned by the selected build configuration: `Release_2026.4.10` and `Debug_2026.4.10` both resolve `Nice3point.Revit.Api.*` version `2026.4.10`. The central file derives this value from `Configuration` because the SDK sets `MajorRevitVersion` after the central file is evaluated. Keep the configurations and the supported-version matrix in sync.
+
 ## Supported Revit versions
 
 This repository supports Revit 2021.1.100, 2022.1.80, 2023.1.90, 2024.3.60, 2025.4.60, 2026.4.10, and 2027.3.0. Keep project configurations, tests, CI, documentation, and produced packages limited to this matrix. The shared SDK maintains its own broader compatibility range.

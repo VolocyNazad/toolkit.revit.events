@@ -22,15 +22,15 @@ API. Consumed by `toolkit.revit.mediatR` in this same family.
 ## Tech stack
 
 - .NET, built against `Nice3point.Revit.Api.RevitAPI` /
-  `Nice3point.Revit.Api.RevitAPIUI` (floating `$(MajorRevitVersion).*`, so each
-  major resolves to its latest stable API patch)
+  `Nice3point.Revit.Api.RevitAPIUI`; the package version follows the selected
+  build configuration (for example `Release_2026.4.10` uses `2026.4.10`)
 - AutoConstructor (source-generated DI constructors)
 - Microsoft.Extensions.DependencyInjection.Abstractions
 - MinVer (git-tag-based versioning), PolySharp (polyfills)
 - Tests: **xunit.v3** (matches `toolkit.revit.async` in this same repo family) + coverlet.collector +
   Microsoft.Extensions.DependencyInjection
-- Central package management is not used; package versions are set per
-  `<PackageReference>`.
+- Package versions are managed centrally in `Directory.Packages.props`;
+  test-only packages live in `tests/Directory.Packages.props`.
 
 ## Documentation layout
 
