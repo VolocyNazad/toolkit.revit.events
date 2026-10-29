@@ -113,6 +113,7 @@ See [CHANGELOG.md](./CHANGELOG.md).
 - [Development policy](docs/policies/development.md)
 - [Repository guide and technology stack](docs/repository.md)
 - [Branching policy](docs/policies/branching.md)
+- [Commit message policy](docs/policies/commits.md)
 
 ## Contributing
  [CONTRIBUTING.md](CONTRIBUTING.md) before submitting changes.
