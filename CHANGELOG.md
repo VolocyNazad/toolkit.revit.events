@@ -6,6 +6,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Branching policy: `main` holds the released state, `dev` integrates the next release, and changes arrive through feature, fix, release and hotfix branches.
+
 ### Changed
 
 - Moved package versions to central package management (`Directory.Packages.props` and `tests/Directory.Packages.props`); Revit API package versions follow the selected build configuration.
