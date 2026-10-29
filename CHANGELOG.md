@@ -12,6 +12,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Document the commit message policy: the Conventional Commits type set, breaking-change markers and subject rules.
+
 - Moved package versions to central package management (`Directory.Packages.props` and `tests/Directory.Packages.props`); Revit API package versions follow the selected build configuration.
 
 ## [0.0.10] - 2026-10-15
