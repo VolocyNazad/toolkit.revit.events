@@ -2,59 +2,49 @@
 
 Paths mentioned in this policy are relative to the repository root unless a Markdown link specifies otherwise.
 
-The stack documented in [Repository guide](../repository.md) is the default and takes priority over
-whatever an agent might otherwise reach for. Prefer what's already in use
-over introducing an alternative. If a deviation seems necessary, say so
-explicitly to the user and get confirmation before adding it.
+Read when: you start a change; it owns the stack priority, the asking rule and the code basics.
 
-If a change affects the folder structure or the tech stack (a new/removed project, a new dependency, a version bump worth recording, a new convention), update the relevant policy and [repository guide](../repository.md) accordingly as part of the same change - don't leave it to a later pass.
+The [policy index](README.md) lists every policy with the area it covers and what enforces it. This
+policy is the entry point: it states the rules that apply to any change and routes the rest.
 
-Before changing existing tests or writing new ones, ask the user first – confirm what should be covered and how (or that the change is trivial enough not to need it) rather than deciding unilaterally.
+The stack documented in the [repository guide](../repository.md) is the default and takes priority
+over whatever an agent or a contributor might otherwise reach for. Prefer what is already in use
+over introducing an alternative. If a deviation seems necessary, say so explicitly to the user and
+get confirmation before adding it.
 
-Commit messages follow the [commit message policy](commits.md).
+If a change affects the folder structure or the technology stack (a new or removed project, a new
+dependency, a version bump worth recording, a new convention), update the relevant policy and the
+[repository guide](../repository.md) in the same change, never as a later follow-up.
 
-Don't `git push` - commit locally and leave pushing to the user, unless they explicitly ask for a push.
+Before changing existing tests or writing new ones, ask the user first: confirm what should be
+covered and how, or that the change is trivial enough not to need it.
 
-Branching follows the [branching policy](branching.md): `main` holds the released state,
-`dev` integrates the next release, and every change reaches them through a short-lived
-branch and a pull request.
+Do not `git push` — commit locally and leave the push to the user unless they explicitly ask.
 
-Tests that touch live Revit API objects must use `Nice3point.TUnit.Revit` (see the [repository guide](../repository.md) for stack/testing notes for when that's needed vs plain xunit) - it runs inside a real Revit process, so it can't be used for tests that exercise `RevitAPIUI`.
+## Where the rules live
 
-Keep [CHANGELOG.md](../../CHANGELOG.md) up to date as the [changelog policy](changelog.md) requires.
+| Topic | Policy |
+| --- | --- |
+| Branch, base branch, merge strategy | [Branching policy](branching.md) |
+| Commit message | [Commit message policy](commits.md) |
+| `CHANGELOG.md` and `changelog.d/` | [Changelog policy](changelog.md) |
+| Pull request, review, required checks | [Pull request policy](pull-requests.md) |
+| Tests | [Testing policy](testing.md) |
+| Benchmarks | [Benchmark policy](benchmarks.md) |
+| Release, tag, NuGet package | [Release policy](releases.md) |
+| Contributor documentation and XML docs | [Documentation policy](documentation.md) |
+| .NET SDK, projects, packages, warnings | [Build and toolchain policy](build.md) |
+| Solution items, validator, formatting | [Repository maintenance policy](repository-maintenance.md) |
 
-Tests follow the [testing policy](testing.md): what needs a test, which Revit versions must be
-covered and how the headless and in-Revit suites are laid out. Performance work follows the
-[benchmark policy](benchmarks.md).
+## Code basics
 
-## .NET SDK selection
+Do not invent abbreviations in identifiers, file names or documentation. Use complete words such as
+`Configuration`, `Notification` and `Serializer`; established terms such as `API`, `XML`, `Guid`,
+`Id` and `Uri` remain valid.
 
-Use the repository-root `global.json` for local builds and CI: SDK `10.0.103` or a later stable SDK in the `10.0` major/minor line (`rollForward: latestFeature`, `allowPrerelease: false`). Do not roll forward to another major/minor line without updating this policy and `global.json` together. GitHub Actions setup steps must read `global-json-file: global.json` after checkout. Additional SDKs may be installed to supply runtimes for older test targets; they do not replace the SDK selected by `global.json`. This policy does not change project target frameworks.
+Use `global using` only when most files in that project need the namespace. Keep specialized
+namespaces local, and do not repeat namespaces already supplied by `ImplicitUsings`. Apply this rule
+to new and touched code; clean up existing files only within the task scope.
 
-## Solution items
-
-Keep the root solution in sync with existing repository-level documentation, license, Git/editor settings, SDK/NuGet/versioning and shared MSBuild configuration, and root maintenance scripts. Expose root files under `solutionItems`, `.github/` and `scripts/` under matching subfolders, and documentation under `docs/` with its directory hierarchy. Add, rename or remove solution links together with the corresponding files. Include only existing files, once each; exclude local settings, secrets and generated output. Solution templates must follow the same convention.
-## Repository validation
-
-Run `./scripts/Validate-Repository.ps1` after changing repository-level files,
-documentation or the solution. CI runs the same validator. It checks the required
-files and navigation links and verifies that managed repository files are present
-exactly once in Solution Items. Update the solution together with added, renamed or
-removed managed files. Solution templates follow the same contract.
-
-## Formatting baseline
-
-Keep the root `.editorconfig` in the solution and apply its repository-wide encoding, line-ending and trailing-whitespace rules. Repository-specific sections may add stricter language rules. Update the file deliberately when formatting conventions change; do not replace specialized rules with the shared minimum.
-## Test execution
-
-Projects using xUnit v3 4.0 run through Microsoft.Testing.Platform, selected in global.json. CI invokes each headless test project explicitly and treats a run with no discovered tests as a failure. Tests that require a running Revit process use the .RevitTests suffix and are excluded from hosted headless test runs.
-
-## Package version management
-
-Use central package management: declare runtime and build package versions in the root `Directory.Packages.props`, and test-only packages in `tests/Directory.Packages.props`, which imports the root file. Keep `MinVer` as a `GlobalPackageReference`; source generators remain local `PackageReference` items with their version in the central file. Do not put versions on `PackageReference` items except through an explicit, documented exception.
-
-The Revit API packages are versioned by the selected build configuration: `Release_2026.4.10` and `Debug_2026.4.10` both resolve `Nice3point.Revit.Api.*` version `2026.4.10`. The central file derives this value from `Configuration` because the SDK sets `MajorRevitVersion` after the central file is evaluated. Keep the configurations and the supported-version matrix in sync.
-
-## Supported Revit versions
-
-This repository supports Revit 2021.1.100, 2022.1.80, 2023.1.90, 2024.3.60, 2025.4.60, 2026.4.10, and 2027.3.0. Keep project configurations, tests, CI, documentation, and produced packages limited to this matrix. The shared SDK maintains its own broader compatibility range.
+Keep `CHANGELOG.md` in the state the [changelog policy](changelog.md) requires: regular development
+leaves `## [Unreleased]` empty, and a change carries its entry as a fragment in `changelog.d/`.
