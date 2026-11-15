@@ -57,6 +57,7 @@
     <File Path="docs/policies/repository-maintenance.md" />
   </Folder>
   <Folder Name="/solutionItems/.github/">
+    <File Path=".github/dependabot.yml" />
     <File Path=".github/pull_request_template.md" />
   </Folder>
   <Folder Name="/solutionItems/.github/workflows/">
