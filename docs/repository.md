@@ -89,9 +89,9 @@ stable tag and a matching changelog section.
 
 ## Testing
 
-The automated suite is in `tests/Revit.Events.Tests` and covers the option flags, the lambda handler
-and the dependency-injection registration without a running Revit. A test that needs Revit-typed
-objects is skipped with the reason in the attribute, and the [testing policy](policies/testing.md)
+The automated suite is in `tests/Revit.Events.Tests`. The option-flag tests run anywhere; a test that
+loads Revit-typed objects is marked `[Fact(Skip = ...)]` with the reason, because the CLR cannot
+resolve the Revit assemblies outside a Revit process. The [testing policy](policies/testing.md)
 defines what a manual check must cover.
 
 ## Versioning and release tags
