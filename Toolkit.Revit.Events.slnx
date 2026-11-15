@@ -66,5 +66,7 @@
   </Folder>
   <Folder Name="/solutionItems/scripts/">
     <File Path="scripts/Validate-Repository.ps1" />
+    <File Path="scripts/Update-Changelog.ps1" />
+    <File Path="scripts/Verify-Release.ps1" />
   </Folder>
 </Solution>

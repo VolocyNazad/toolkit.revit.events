@@ -19,43 +19,9 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - name: Verify release tag
+    - name: Verify release tag, changelog and branch
       shell: pwsh
-      run: |
-        $tags = @(git tag --points-at HEAD | Where-Object { $_ -match '^0\.0\.(\d+)$' })
-        if ($tags.Count -ne 1) {
-          throw "The selected commit must have exactly one stable tag such as '0.0.8'."
-        }
-        $null = $tags[0] -match '^0\.0\.(\d+)$'
-        "RELEASE_PATCH=$($Matches[1])" | Out-File -FilePath $env:GITHUB_ENV -Append
-    - name: Verify release changelog
-      shell: pwsh
-      run: |
-        $tag = @(git tag --points-at HEAD | Where-Object { $_ -match '^0\.0\.(\d+)$' })[0]
-        $version = $tag -replace '^v', ''
-        $lines = @(Get-Content -LiteralPath CHANGELOG.md -Encoding utf8)
-
-        $start = -1
-        for ($i = 0; $i -lt $lines.Count; $i++) {
-          if ($lines[$i] -match '^## \[Unreleased\]') { $start = $i; break }
-        }
-        if ($start -lt 0) {
-          throw "CHANGELOG.md has no '## [Unreleased]' section."
-        }
-
-        $pending = @()
-        for ($i = $start + 1; $i -lt $lines.Count -and $lines[$i] -notmatch '^## '; $i++) {
-          if ($lines[$i].Trim() -and $lines[$i] -notmatch '^###\s') { $pending += $lines[$i] }
-        }
-        if ($pending.Count -gt 0) {
-          throw "CHANGELOG.md still has $($pending.Count) unreleased line(s). Move them into the '## [$version]' section before publishing."
-        }
-
-        $heading = "## [$version]"
-        $released = @($lines | Where-Object { $_.StartsWith($heading, [StringComparison]::Ordinal) })
-        if ($released.Count -ne 1) {
-          throw "CHANGELOG.md must contain exactly one '$heading - YYYY-MM-DD' section for the release tag $tag."
-        }
+      run: ./scripts/Verify-Release.ps1 -FromHeadTag -AncestorOf main
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v4
       with:
@@ -78,9 +44,11 @@ jobs:
         $id = $nuspec.SelectSingleNode("/*[local-name()='package']/*[local-name()='metadata']/*[local-name()='id']").InnerText
         $version = $nuspec.SelectSingleNode("/*[local-name()='package']/*[local-name()='metadata']/*[local-name()='version']").InnerText
         if ($id -ne 'VolocyNazad.Revit.Events') { throw "Unexpected package id '$id'." }
+        $tag = @(git tag --points-at HEAD | Where-Object { $_ -match '^\d+\.\d+\.\d+$' })[0]
+        $patch = $tag.Split('.')[2]
         $configuration = "${{ matrix.configuration }}"
         if ($configuration -notmatch '^Release_(\d{4})\.') { throw "Cannot determine the Revit year from configuration '$configuration'." }
-        $expectedVersion = "$($Matches[1]).0.$env:RELEASE_PATCH"
+        $expectedVersion = "$($Matches[1]).0.$patch"
         if ($version -ne $expectedVersion) { throw "Package version '$version' does not match expected release version '$expectedVersion'." }
 
     - name: Publish NuGet package
