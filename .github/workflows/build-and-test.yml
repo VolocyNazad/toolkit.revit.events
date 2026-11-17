@@ -7,10 +7,6 @@ on:
     - dev
   pull_request:
 
-concurrency:
-  group: build-and-test-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-
 permissions:
   contents: read
 
@@ -24,6 +20,9 @@ jobs:
     name: windows-latest
     runs-on: windows-latest
     timeout-minutes: 45
+    concurrency:
+      group: build-and-test-${{ github.workflow }}-${{ github.ref }}-${{ matrix.configuration }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     strategy:
       matrix:
         configuration: [
