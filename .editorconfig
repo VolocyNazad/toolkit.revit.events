@@ -25,3 +25,8 @@ dotnet_diagnostic.CA2000.severity = none
 [src/Revit.Events/Infrastructure/RevitContextManager.cs]
 dotnet_diagnostic.CA1065.severity = none
 dotnet_diagnostic.CA1810.severity = none
+
+# C# 14 extension blocks compile into a nested container type that the compiler generates. It cannot
+# be made internal without dropping the public extension API, so CA1034 cannot be satisfied here.
+[src/Revit.Events/DI/Registrator.cs]
+dotnet_diagnostic.CA1034.severity = none
