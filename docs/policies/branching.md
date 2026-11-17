@@ -2,6 +2,8 @@
 
 Paths mentioned in this policy are relative to the repository root unless a Markdown link specifies otherwise.
 
+Read when: creating a branch, choosing its base branch or merging.
+
 The repository follows [Git Flow](https://nvie.com/posts/a-successful-git-branching-model/).
 `main` always reflects a released state, `dev` integrates the changes for the next
 release, and every other branch is short-lived. Branch names, base branches and merge
@@ -19,14 +21,21 @@ The integration branch is always `dev`.
 | `dev` | `main` | - | permanent | Integration branch: the state of the next release. |
 | `feature/<ticket>-<slug>` | `dev` | `dev` | days | New behaviour. |
 | `fix/<ticket>-<slug>` | `dev` | `dev` | days | Defect that is not urgent in production. |
+| `chore/<slug>` | `dev` | `dev` | days | Repository maintenance: ignore files, tooling, scripts and configuration. |
 | `release/<version>` | `dev` | `main` and `dev` | hours | Release preparation: changelog, final fixes. |
 | `hotfix/<version>` | `main` | `main` and `dev` | hours | Urgent production defect. |
 
 `<ticket>` is the issue number when the repository has an issue tracker and is omitted
 otherwise. `<slug>` is a short lowercase kebab-case description, for example
-`feature/123-parameter-dependency-creator` or `fix/207-null-selection`. No other
-prefixes (`bugfix/`, `topic/`, `wip/`): review and tooling expect the six branch kinds
-above.
+`feature/123-value-store-notifications` or `fix/207-null-serializer`. A `chore/` branch
+carries no ticket, so its name is only `chore/<slug>` such as
+`chore/policy-profile-alignment`. No other prefixes (`bugfix/`, `topic/`, `wip/`): review
+and tooling expect the branch kinds above.
+
+A documentation-only change — `README.md`, a policy or guide under `docs/`, a workflow or a
+script — is repository maintenance: it uses a `chore/<slug>` branch, targets `dev`, and its
+commits use the `docs` type ([commit message policy](commits.md)). There is no separate
+`docs/` branch prefix.
 
 `main` and `dev` are permanent; every other branch is deleted after it is merged,
 locally and on the remote.
@@ -46,7 +55,7 @@ locally and on the remote.
   [commit message policy](commits.md).
 - `dev` stays buildable. A change that breaks the build or the tests is fixed or
   reverted immediately, not at the end of the release.
-- Update [CHANGELOG.md](../../CHANGELOG.md) as the [changelog policy](changelog.md)
+- Add the changelog fragment under `changelog.d/` as the [changelog policy](changelog.md)
   requires, in the same branch as the change.
 
 ## Feature and fix branches
@@ -66,7 +75,9 @@ git branch -d feature/123-parameter-dependency-creator
 git push origin --delete feature/123-parameter-dependency-creator
 ```
 
-`fix/` branches work the same way and differ only in intent.
+`fix/` branches work the same way and differ only in intent. `chore/` branches use the
+same flow for repository maintenance; the commit type is `chore` or `docs`, as the
+[commit message policy](commits.md) defines.
 
 ## Release branches
 

@@ -6,23 +6,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-### Added
-
-- Add a testing policy: test kinds, Revit version coverage, naming, isolation and the manual smoke check.
-- Add a benchmark policy: when performance is measured, how, and how results are reported.
-
-- Branching policy: `main` holds the released state, `dev` integrates the next release, and changes arrive through feature, fix, release and hotfix branches.
-
-### Changed
-
-- Move the changelog policy to `docs/policies/changelog.md` and require it in the repository validator.
-
-- Move the commit message policy to `docs/policies/commits.md` and require it in the repository validator.
-
-- Document the commit message policy: the Conventional Commits type set, breaking-change markers and subject rules.
-
-- Moved package versions to central package management (`Directory.Packages.props` and `tests/Directory.Packages.props`); Revit API package versions follow the selected build configuration.
-
 ## [0.0.10] - 2026-10-15
 
 ### Added

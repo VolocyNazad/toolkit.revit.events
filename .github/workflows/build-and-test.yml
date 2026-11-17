@@ -4,12 +4,25 @@ on:
   push:
     branches:
     - main
+    - dev
   pull_request:
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  ContinuousIntegrationBuild: true
 
 jobs:
   build:
     name: windows-latest
     runs-on: windows-latest
+    timeout-minutes: 45
+    concurrency:
+      group: build-and-test-${{ github.workflow }}-${{ github.ref }}-${{ matrix.configuration }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     strategy:
       matrix:
         configuration: [
@@ -19,16 +32,24 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7.0.1
       with:
         fetch-depth: 0
+        persist-credentials: false
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5.4.0
       with:
         global-json-file: global.json
+        cache: true
+        cache-dependency-path: |
+          global.json
+          **/Directory.Packages.props
+          NuGet.config
     - name: Execute build and run tests
+      shell: pwsh
       run: |
-        dotnet build --configuration "${{ matrix.configuration }}" /nologo
+        dotnet build --configuration "${{ matrix.configuration }}" -p:Platform=x64 -p:TreatWarningsAsErrors=true -p:EnforcePublicApiDocumentation=true /nologo
+        if ($LASTEXITCODE -ne 0) { throw "Build failed for configuration '${{ matrix.configuration }}'." }
 
         # Run every headless test project (*.Tests.csproj); *.RevitTests.csproj projects need a
         # locally installed, licensed Revit process to execute and are not runnable on a hosted
@@ -37,10 +58,19 @@ jobs:
           Where-Object { $_.Name -match '\.Tests\.csproj$' -and $_.Name -notmatch 'RevitTests' }
 
         foreach ($project in $testProjects) {
-          dotnet test --project $project.FullName --configuration "${{ matrix.configuration }}"
+          $year = [int]([regex]::Match("${{ matrix.configuration }}", '^Release_(\d{4})\.').Groups[1].Value)
+          $framework = if ($year -ge 2027) { "net10.0-windows" } elseif ($year -ge 2025) { "net8.0-windows" } else { "net48" }
+          $testExecutable = Join-Path $project.DirectoryName "bin/x64/${{ matrix.configuration }}/$framework/$($project.BaseName).exe"
+          if (-not (Test-Path -LiteralPath $testExecutable)) {
+            throw "Test executable was not produced: $testExecutable"
+          }
+          & $testExecutable
+          if ($LASTEXITCODE -ne 0) {
+            throw "Tests failed for $($project.FullName) with exit code $LASTEXITCODE."
+          }
         }
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7.0.2
       with:
         name: VolocyNazad.Revit.Events-${{ matrix.configuration }}
         path: artifacts/*

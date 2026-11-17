@@ -4,3 +4,29 @@ root = true
 charset = utf-8
 end_of_line = crlf
 trim_trailing_whitespace = true
+
+# Raise() posts a Revit external event; the name mirrors Autodesk.Revit.UI.ExternalEvent.Raise and is
+# part of the public API, so it is not a member that should be an event.
+[src/Revit.Events/Abstractions/Services/*.cs]
+dotnet_diagnostic.CA1030.severity = none
+
+# The delegate runs inside Revit, and any exception it throws must reach the awaiting caller instead
+# of escaping into Revit's event loop, so the catch-all is the contract of the method.
+[src/Revit.Events/Services/AsyncExternalEvent.cs]
+dotnet_diagnostic.CA1031.severity = none
+
+# Revit owns the ExternalEvent object until the queued handler runs; disposing it here would cancel
+# the request, so the created instance intentionally outlives the call.
+[src/Revit.Events/Services/*.cs]
+dotnet_diagnostic.CA2000.severity = none
+
+# The static constructor resolves Revit's internal members and fails fast when the host does not match
+# the expected layout; the exceptions are the diagnosis and cannot be inlined into field initializers.
+[src/Revit.Events/Infrastructure/RevitContextManager.cs]
+dotnet_diagnostic.CA1065.severity = none
+dotnet_diagnostic.CA1810.severity = none
+
+# C# 14 extension blocks compile into a nested container type that the compiler generates. It cannot
+# be made internal without dropping the public extension API, so CA1034 cannot be satisfied here.
+[src/Revit.Events/DI/Registrator.cs]
+dotnet_diagnostic.CA1034.severity = none
